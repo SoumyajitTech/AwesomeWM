@@ -156,7 +156,7 @@ theme.mail = lain.widget.imap({
 
 -- ALSA volume
 theme.volume = lain.widget.alsabar({
-    --togglechannel = "IEC958,3",
+    -- togglechannel = "IEC958,3",
     notification_preset = { font = theme.font, fg = theme.fg_normal },
 })
 
@@ -174,7 +174,7 @@ mpdicon:buttons(my_table.join(
         awful.spawn.with_shell("mpc toggle")
         theme.mpd.update()
     end),
-    awful.button({ modkey }, 3, function () awful.spawn.with_shell("pkill ncmpcpp") end),
+    awful.button({ modkey }, 3, function () awful.spawn.with_shell("pkill mocp") end),
     awful.button({ }, 3, function ()
         awful.spawn.with_shell("mpc stop")
         theme.mpd.update()
@@ -338,7 +338,7 @@ end
 function theme.at_screen_connect(s)
     -- Quake application
    -- s.quake = lain.util.quake({ app = awful.util.terminal })
-   s.quake = lain.util.quake({ app = "termite", height = 0.50, argname = "--name %s" })
+   s.quake = lain.util.quake({ app = "terminator", height = 0.50, argname = "--name %s" })
 
 
 
@@ -366,10 +366,10 @@ function theme.at_screen_connect(s)
     s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, awful.util.taglist_buttons)
 
     -- Create a tasklist widget
-    --s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
+    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 20, bg = theme.bg_normal, fg = theme.fg_normal })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = 18, bg = theme.bg_normal, fg = theme.fg_normal })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -410,7 +410,7 @@ function theme.at_screen_connect(s)
             arrow("#7197E7", "#A77AC4"),
             wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, 3, 4), "#A77AC4"),
             arrow("#A77AC4", "#7197E7"),
-            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, 4, 4), "#7197E7"),
+            -- wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, 4, 4), "#7197E7"),
             arrow("#7197E7", "#A77AC4"),
             wibox.container.background(wibox.container.margin(wibox.widget { weathericon, theme.weather.widget, layout = wibox.layout.align.horizontal }, 3, 3), "#A77AC4"),
             arrow("#A77AC4", "#7197E7"),
@@ -419,7 +419,7 @@ function theme.at_screen_connect(s)
             wibox.container.background(wibox.container.margin(wibox.widget { nil, net.widget, layout = wibox.layout.align.horizontal }, 3, 3), "#A77AC4"),
             arrow("#A77AC4", "#7197E7"),
             wibox.container.background(wibox.container.margin(clock, 4, 8), "#7197E7"),
-            arrow("#7197E7", "#alpha"),
+            arrow("#7197E7", "#3F3F3F"),
             --]]
             wibox.widget.systray(),
             -- s.mylayoutbox,
