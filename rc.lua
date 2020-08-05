@@ -47,7 +47,12 @@ end
 
 local function run_once(cmd_arr)
     for _, cmd in ipairs(cmd_arr) do
-        awful.spawn.with_shell(string.format("pgrep -u $USER -fx '%s' > /dev/null || (%s)", cmd, cmd))
+        findme = cmd
+        firstspace = cmd:find(" ")
+        if firstspace then
+            findme = cmd:sub(0, firstspace-1)
+        end
+        awful.spawn.with_shell(string.format("pgrep -u $USER -x '%s' > /dev/null || (%s)", findme, cmd))
     end
 end
 
@@ -55,12 +60,14 @@ run_once({ "unclutter -root" }) -- entries must be comma-separated
 
 local themes = {
     "powerarrow-blue", -- 1
-    "powerarrow",      -- 2
-    "multicolor",      -- 3
+    "copland",         -- 2
+    "powerarrow",      -- 3
+    "multicolor",      -- 4
+    "msjche",          -- 5
 }
 
 -- choose your theme here
-local chosen_theme = themes[1]
+local chosen_theme = themes[5]
 local theme_path = string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), chosen_theme)
 beautiful.init(theme_path)
 
@@ -264,7 +271,7 @@ globalkeys = my_table.join(
         {description = "youtube-viewer" , group = "terminal apps" }),
 
     -- screenshots
-    awful.key({ modkey }, "s", function () awful.util.spawn(" i3-scrot " ) end,
+    awful.key({ modkey }, "s", function ()  awful.spawn.with_shell("i3-scrot") end,
         {description = "Scrot", group = "screenshots"}),
 
     -- Personal keybindings}}}
@@ -390,10 +397,11 @@ globalkeys = my_table.join(
     awful.key({ modkey,  altkey   }, "r",  function () awful.spawn.with_shell( 'prompt "Are you sure to Reboot?" "reboot"' ) end,
               {description = "Restart", group = "awesome"}),
 
-    awful.key({ altkey, "Shift"   }, "j",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ modkey, "Control"   }, "j",     function () awful.tag.incmwfact( 0.05)          end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ altkey, "Shift"   }, "k",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ modkey, "Control"   }, "k",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
+
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
@@ -408,6 +416,14 @@ globalkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "Tab", function () awful.layout.inc(-1)                end,
              {description = "select previous", group = "layout"}),
 
+
+    awful.key({ modkey,           }, "n",
+        function (c)
+            -- The client currently has the input focus, so it cannot be
+            -- minimized, since minimized clients can't have the focus.
+            c.minimized = true
+        end ,
+        {description = "minimize", group = "client"}),
     awful.key({ modkey, modkey1 }, "n",
               function ()
                   local c = awful.client.restore()
@@ -437,18 +453,18 @@ globalkeys = my_table.join(
     --awful.key({ modkey1 }, "Up",
     awful.key({ }, "XF86AudioRaiseVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
+            os.execute("amixer set Master 2%+")
             beautiful.volume.update()
         end),
     --awful.key({ modkey1 }, "Down",
     awful.key({ }, "XF86AudioLowerVolume",
         function ()
-            os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
+            os.execute("amixer set Master 2%-")
             beautiful.volume.update()
         end),
     awful.key({ }, "XF86AudioMute",
         function ()
-            os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
+            os.execute("amixer set Master toggle")
             beautiful.volume.update()
         end),
 
@@ -499,13 +515,6 @@ clientkeys = my_table.join(
     --           {description = "move to screen", group = "client"}),
     -- awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
     --           {description = "toggle keep on top", group = "client"}),
-    awful.key({ modkey,           }, "n",
-        function (c)
-            -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end ,
-        {description = "minimize", group = "client"}),
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized = not c.maximized
@@ -600,7 +609,8 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
                      screen = awful.screen.preferred,
-                     placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+                     -- placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+                     placement = awful.placement.centered,
                      size_hints_honor = false
      }
     },
@@ -637,7 +647,7 @@ awful.rules.rules = {
     { rule = { class = "Gimp*", role = "gimp-image-window" },
           properties = { maximized = true } },
 
-    { rule = { class = "inkscape" },
+    { rule = { class = "Sxiv" },
           properties = { maximized = true } },
 
     { rule = { class = mediaplayer },
@@ -670,7 +680,6 @@ awful.rules.rules = {
           "Galculator",
           "Gpick",
           "GParted",
-          "feh",
           "Nitrogen",
           "Manjaro Settings Manager",
           "Xfce4-power-manager-settings",
@@ -680,9 +689,9 @@ awful.rules.rules = {
           "MessageWin",  -- kalarm.
           "Oblogout",
           "Peek",
+          "Sxiv",
           "Skype",
           "System-config-printer.py",
-          "Sxiv",
           "Unetbootin.elf",
           "Wpa_gui",
           "pinentry",
@@ -690,7 +699,8 @@ awful.rules.rules = {
           "xtightvncviewer"},
 
         name = {
-          "Event Tester",  -- xev.
+            "Execute File",
+            "Event Tester",  -- xev.
         },
         role = {
           "AlarmWindow",  -- Thunderbird's calendar.
@@ -712,7 +722,8 @@ client.connect_signal("manage", function (c)
       not c.size_hints.user_position
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
-        awful.placement.no_offscreen(c)
+          -- awful.placement.no_offscreen(c)
+          awful.placement.centered(c)
     end
 end)
 
@@ -785,7 +796,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 awful.spawn.with_shell("nitrogen --restore")
 awful.spawn.with_shell("picom --config  $HOME/.config/picom/picom.conf")
 awful.spawn.with_shell("nm-applet")
--- awful.spawn.with_shell("volumeicon")
+awful.spawn.with_shell("pulseaudio")
 awful.spawn.with_shell("xfce4-power-manager")
 awful.spawn.with_shell("/usr/bin/wallpaper-reddit --startup")
 awful.spawn.with_shell("xautolock -time 10 -locker lock")
