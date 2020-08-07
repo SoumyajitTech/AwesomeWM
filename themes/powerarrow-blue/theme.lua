@@ -7,6 +7,8 @@
 
 local gears = require("gears")
 local lain  = require("lain")
+local os    = { getenv = os.getenv, setlocale = os.setlocale }
+local cpu_widget = require("widgets.cpu-widget")
 local awful = require("awful")
 local wibox = require("wibox")
 
@@ -25,8 +27,8 @@ theme.bg_normal                                 = "#282a36"
 theme.bg_focus                                  = "#049bed"
 theme.bg_urgent                                 = "#ed3e04"
 theme.taglist_fg_focus                          = "#282a36"
-theme.tasklist_bg_focus                         = "#000000"
-theme.tasklist_fg_focus                         = "#A77AC4"
+theme.tasklist_bg_focus                         = "#282a36"
+theme.tasklist_fg_focus                         = "#fcfcfc"
 theme.border_width                              = 2
 theme.border_normal                             = "#282a36"
 theme.border_focus                              = "#f72504"
@@ -101,6 +103,10 @@ theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/
 local markup = lain.util.markup
 local separators = lain.util.separators
 
+-- lain related
+theme.layout_centerfair                         = theme.dir .. "/icons/centerfair.png"
+theme.layout_termfair                           = theme.dir .. "/icons/termfair.png"
+theme.layout_centerwork                         = theme.dir .. "/icons/centerwork.png"
 
 -- Textclock
 local clockicon = wibox.widget.imagebox(theme.widget_clock)
@@ -154,6 +160,7 @@ theme.mail = lain.widget.imap({
 })
 --]]
 
+
 -- ALSA volume
 theme.volume = lain.widget.alsabar({
     -- togglechannel = "IEC958,3",
@@ -161,7 +168,7 @@ theme.volume = lain.widget.alsabar({
 })
 
 -- MPD
-local musicplr = "terminator -title Music -g 130x34-320+16 -e mocp"
+local musicplr = "Lollypop"
 local mpdicon = wibox.widget.imagebox(theme.widget_music)
 mpdicon:buttons(my_table.join(
     awful.button({ modkey }, 1, function () awful.spawn.with_shell(musicplr) end),
@@ -174,7 +181,7 @@ mpdicon:buttons(my_table.join(
         awful.spawn.with_shell("mpc toggle")
         theme.mpd.update()
     end),
-    awful.button({ modkey }, 3, function () awful.spawn.with_shell("pkill mocp") end),
+    awful.button({ modkey }, 3, function () awful.spawn.with_shell("pkill lollypop") end),
     awful.button({ }, 3, function ()
         awful.spawn.with_shell("mpc stop")
         theme.mpd.update()
@@ -238,7 +245,7 @@ Copy/paste the city code in the URL to this file in city_id
 --]]
 local weathericon = wibox.widget.imagebox(theme.widget_weather)
 theme.weather = lain.widget.weather({
-    city_id = 2803138, -- placeholder (Belgium)
+    city_id = 1275004, -- placeholder (Kolkata)
     notification_preset = { font = "Mononoki Nerd Font 11", fg = theme.fg_normal },
     weather_na_markup = markup.fontfg(theme.font, "#ffffff", "N/A "),
     settings = function()
@@ -248,7 +255,7 @@ theme.weather = lain.widget.weather({
     end
 })
 
---[[ / fs
+--/ fs
 local fsicon = wibox.widget.imagebox(theme.widget_hdd)
 theme.fs = lain.widget.fs({
     notification_preset = { fg = theme.fg_normal, bg = theme.bg_normal, font = "Noto Sans Mono Medium 10" },
@@ -257,7 +264,6 @@ theme.fs = lain.widget.fs({
         widget:set_markup(markup.font(theme.font, fsp))
     end
 })
---]]
 
 -- Battery
 local baticon = wibox.widget.imagebox(theme.widget_battery)
@@ -410,7 +416,7 @@ function theme.at_screen_connect(s)
             arrow("#7197E7", "#A77AC4"),
             wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, 3, 4), "#A77AC4"),
             arrow("#A77AC4", "#7197E7"),
-            -- wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, 4, 4), "#7197E7"),
+            wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs.widget, layout = wibox.layout.align.horizontal }, 4, 4), "#7197E7"),
             arrow("#7197E7", "#A77AC4"),
             wibox.container.background(wibox.container.margin(wibox.widget { weathericon, theme.weather.widget, layout = wibox.layout.align.horizontal }, 3, 3), "#A77AC4"),
             arrow("#A77AC4", "#7197E7"),
