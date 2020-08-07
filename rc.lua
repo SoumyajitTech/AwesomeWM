@@ -96,6 +96,7 @@ awful.layout.layouts = {
     awful.layout.suit.tile,
     awful.layout.suit.spiral,
     awful.layout.suit.floating,
+    lain.layout.centerwork,
     --awful.layout.suit.tile.left,
     --awful.layout.suit.tile.bottom,
     --awful.layout.suit.tile.top,
@@ -111,7 +112,6 @@ awful.layout.layouts = {
     --awful.layout.suit.corner.se,
     --lain.layout.cascade,
     -- lain.layout.cascade.tile,
-    --lain.layout.centerwork,
     --lain.layout.centerwork.horizontal,
     --lain.layout.termfair,
     -- lain.layout.termfair.center,
@@ -416,14 +416,6 @@ globalkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "Tab", function () awful.layout.inc(-1)                end,
              {description = "select previous", group = "layout"}),
 
-
-    awful.key({ modkey,           }, "n",
-        function (c)
-            -- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-            c.minimized = true
-        end ,
-        {description = "minimize", group = "client"}),
     awful.key({ modkey, modkey1 }, "n",
               function ()
                   local c = awful.client.restore()
@@ -466,6 +458,27 @@ globalkeys = my_table.join(
         function ()
             os.execute("amixer set Master toggle")
             beautiful.volume.update()
+        end),
+
+    awful.key({ }, "XF86AudioPlay",
+        function ()
+            awful.spawn.with_shell("mpc toggle")
+            beautiful.mpd.update()
+        end),
+    awful.key({ }, "XF86AudioStop",
+        function ()
+            awful.spawn.with_shell("mpc stop")
+            beautiful.mpd.update()
+        end),
+    awful.key({ }, "XF86AudioPrev",
+        function ()
+            awful.spawn.with_shell("mpc prev")
+            beautiful.mpd.update()
+        end),
+    awful.key({ }, "XF86AudioNext",
+        function ()
+            awful.spawn.with_shell("mpc next")
+            beautiful.mpd.update()
         end),
 
     -- Copy primary to clipboard (terminals to gtk)
@@ -515,6 +528,14 @@ clientkeys = my_table.join(
     --           {description = "move to screen", group = "client"}),
     -- awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
     --           {description = "toggle keep on top", group = "client"}),
+    awful.key({ modkey,           }, "n",
+        function (c)
+            -- The client currently has the input focus, so it cannot be
+            -- minimized, since minimized clients can't have the focus.
+            c.minimized = true
+        end ,
+        {description = "minimize", group = "client"}),
+         
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized = not c.maximized
@@ -621,8 +642,8 @@ awful.rules.rules = {
 
     -- Set applications to always map on the tag 1 on screen 1.
     -- find class or role via xprop command
-    --{ rule = { class = browser1 },
-      --properties = { screen = 1, tag = awful.util.tagnames[1] } },
+    { rule = { class = "qutebrowser" },
+      properties = { screen = 1, tag = awful.util.tagnames[1] } },
 
     --{ rule = { class = editorgui },
         --properties = { screen = 1, tag = awful.util.tagnames[2] } },
@@ -643,14 +664,11 @@ awful.rules.rules = {
 
     { rule = { class = editorgui },
           properties = { maximized = true } },
-
+    
     { rule = { class = "Gimp*", role = "gimp-image-window" },
           properties = { maximized = true } },
 
     { rule = { class = "Sxiv" },
-          properties = { maximized = true } },
-
-    { rule = { class = mediaplayer },
           properties = { maximized = true } },
 
     { rule = { class = "mpv" },
@@ -690,7 +708,7 @@ awful.rules.rules = {
           "Oblogout",
           "Peek",
           "Sxiv",
-          "Skype",
+          "Lollypop",
           "System-config-printer.py",
           "Unetbootin.elf",
           "Wpa_gui",
@@ -700,6 +718,7 @@ awful.rules.rules = {
 
         name = {
             "Execute File",
+            "Text Import",
             "Event Tester",  -- xev.
         },
         role = {
