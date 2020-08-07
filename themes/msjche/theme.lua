@@ -11,12 +11,12 @@ local awful   				= require("awful")
 local wibox   				= require("wibox")
 local os      				= { getenv = os.getenv, setlocale = os.setlocale }
 local awesome, client 		= awesome, client
-local brightnessarc_widget 	= require("widgets.brightnessarc")
+local brightness_widget 	= require("widgets.brightness-widget.brightness")
 local cpu_widget 			= require("widgets.cpu-widget")
 local volumearc_widget 		= require("widgets.volumearc")
 local batteryarc_widget		= require("widgets.batteryarc-widget.batteryarc")
 local fs_widget				= require("widgets.fs-widget")
-local ram_widget			= require("widgets.ram-widget")
+local ram_widget			= require("widgets.ram-widget.ram-widget")
 local net_widgets 			= require("net_widgets")
 
 local theme                                     = {}
@@ -24,9 +24,9 @@ theme.dir                                       = os.getenv("HOME") .. "/.config
 -- theme.wallpaper                                 = theme.dir .. "/wall.png"
 theme.font                                      = "Mononoki Nerd Font 9"
 theme.taglist_font                              = "Droid Sans Bold 7"
-theme.fg_normal                                 = "#fcfcfc"
-theme.fg_focus                                  = "#027af9"
-theme.fg_urgent                                 = "#b74822"
+theme.fg_normal                                 = "#ffffff"
+theme.fg_focus                                  = "#ffffff"
+theme.fg_urgent                                 = "#fcfcfc"
 theme.bg_normal                                 = "#282a36"
 theme.bg_focus                                  = "#049bed"
 theme.bg_urgent                                 = "#ed3e04"
@@ -54,6 +54,8 @@ theme.vol_low                                   = theme.dir .. "/icons/vol_low.p
 theme.vol_no                                    = theme.dir .. "/icons/vol_no.png"
 theme.vol_mute                                  = theme.dir .. "/icons/vol_mute.png"
 theme.disk                                      = theme.dir .. "/icons/disk.png"
+theme.widget_mem                                = theme.dir .. "/icons/mem.png"
+theme.widget_cpu                                = theme.dir .. "/icons/cpu.png"
 theme.ac                                        = theme.dir .. "/icons/ac.png"
 theme.bat                                       = theme.dir .. "/icons/bat.png"
 theme.bat_low                                   = theme.dir .. "/icons/bat_low.png"
@@ -122,10 +124,10 @@ theme.layout_termfair                           = theme.dir .. "/icons/termfair.
 theme.layout_centerwork                         = theme.dir .. "/icons/centerwork.png"
 
 local markup = lain.util.markup
-local blue   = theme.fg_focus
+local blue   = "#049bed"
 local red    = "#EB8F8F"
 local green  = "#8FEB8F"
-local white	 = theme.fg_normal
+local white	 = "#fcfcfc"
 
 -- Awesome WM Widgets
 theme.widget_main_color 	= "#74aeab"
@@ -159,7 +161,7 @@ mylauncher:connect_signal("button::press", function() awful.util.mymainmenu:togg
 
 -- WiFi signal
 net_wireless = net_widgets.wireless({
---	onclick = terminal .. "-e sudo wifi-menu",
+	-- onclick = terminal .. "-e sudo wifi-menu",
 	interface="wlp1s0",
 	popup_signal=true
 })
@@ -228,7 +230,7 @@ local batwidget = lain.widget.bat({
         if bat_now.status == "N/A" or type(bat_now.perc) ~= "number" then return end
 
         if bat_now.status == "Charging" then
-            baticon:set_image(theme.charged_ac)
+            baticon:set_image(theme.ac)
             if bat_now.perc >= 92 then
 				baticon:set_image(theme.charge_full)
             elseif bat_now.perc >= 85 and bat_now.perc < 92 then
@@ -307,29 +309,37 @@ volumearc_widget({
     height = 15
 })
 
-cpu_widget({
-    width = 70,
-    step_width = 2,
-    step_spacing = 0,
-    color = '#434c5e'
-})
+-- cpu_widget({
+--     width = 70,
+--     step_width = 2,
+--     step_spacing = 0,
+--     color = '#434c5e'
+-- })
 
-brightnessarc_widget({
+brightness_widget({
 		color = '#43C5E'
 })
 
+
+-- MEM
+local memicon = wibox.widget.imagebox(theme.widget_mem)
+local mem = lain.widget.mem({
+    settings = function()
+        widget:set_markup(markup.font(theme.font, " " .. mem_now.used .. "MB "))
+    end
+})
 -- ALSA volume
-local volicon = wibox.widget.imagebox(theme.widget_vol)
+local volicon = wibox.widget.imagebox(theme.vol)
 theme.volume = lain.widget.alsa({
     settings = function()
         if volume_now.status == "off" then
-            volicon:set_image(theme.widget_vol_mute)
+            volicon:set_image(theme.vol_mute)
         elseif tonumber(volume_now.level) == 0 then
-            volicon:set_image(theme.widget_vol_no)
+            volicon:set_image(theme.vol_no)
         elseif tonumber(volume_now.level) <= 50 then
-            volicon:set_image(theme.widget_vol_low)
+            volicon:set_image(theme.vol_low)
         else
-            volicon:set_image(theme.widget_vol)
+            volicon:set_image(theme.vol)
         end
 
         widget:set_markup(markup.font(theme.font, " " .. volume_now.level .. "% "))
@@ -461,19 +471,19 @@ function theme.at_screen_connect(s)
             net_wireless,
 			      net,
             small_spr,
-            cpu_widget(),
+            -- cpu_widget(),
+            cpuicon,
             cpu,
-            -- small_spr,
-            -- fs_widget({ mounts = { '/', '/home', '/media/Vault' } }),
-            --fs_widget({ mounts = { '/', '/home' } }),
             small_spr,
-            -- volumearc_widget(),
+            fs_widget({ mounts = { '/', '/home' } }),
+            small_spr,
             volicon,
             theme.volume,
             small_spr,
-            brightnessarc_widget(),
+            brightness_widget(),
             small_spr,
-            ram_widget(),
+            -- ram_widget(),
+            memicon,
             mem,
             small_spr,
             baticon,
