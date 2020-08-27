@@ -64,6 +64,13 @@ local themes = {
     "powerarrow",      -- 3
     "multicolor",      -- 4
     "msjche",          -- 5
+    "rainbow",         -- 6 
+    "blackburn",       -- 7
+    "dremora",         -- 8
+    "holo",            -- 9
+    "powerarrow-dark", -- 10
+    "steamburn",       -- 11
+    "vertex",          -- 12
 }
 
 -- choose your theme here
@@ -83,8 +90,8 @@ local filemanager       = "pcmanfm"
 local mailclient        = "geary"
 local mediaplayer       = "mpv"
 local scrlocker         = "lock"
-local terminal          = "terminator"
-local myTerm            = "urxvt"
+local terminal          = "alacritty"
+local myTerm            = "terminator"
 local virtualmachine    = "virtualbox"
 
 -- awesome variables
@@ -674,8 +681,8 @@ awful.rules.rules = {
     { rule = { class = "mpv" },
           properties = { maximized = true } },
 
-    { rule = { class = "VirtualBox Manager" },
-          properties = { maximized = true } },
+    -- { rule = { class = "Librewolf" },
+    --       properties = { maximized = true } },
 
     { rule = { class = "VirtualBox Machine" },
           properties = { maximized = true } },
@@ -694,6 +701,7 @@ awful.rules.rules = {
         class = {
           "Arandr",
           "URxvt",  
+          "Terminator",
           "Blueberry",
           "Galculator",
           "Gpick",
@@ -818,5 +826,5 @@ awful.spawn.with_shell("nm-applet")
 awful.spawn.with_shell("pulseaudio")
 awful.spawn.with_shell("xfce4-power-manager")
 awful.spawn.with_shell("/usr/bin/wallpaper-reddit --startup")
-awful.spawn.with_shell("xautolock -time 10 -locker lock")
+-- awful.spawn.with_shell("xautolock -time 10 -locker lock")
 awful.spawn.with_shell("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
